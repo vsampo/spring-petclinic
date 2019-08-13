@@ -17,6 +17,8 @@ package org.springframework.samples.petclinic.vet;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
@@ -53,6 +55,12 @@ class VetController {
         Vets vets = new Vets();
         vets.getVetList().addAll(this.vets.findAll());
         return vets;
+    }
+
+    @PostMapping(path="/vets", consumes = "application/json", produces = "application/json")
+    public @ResponseBody Vet addVet(@RequestBody Vet newVet) {
+        vets.save(newVet);
+        return newVet;
     }
 
 }

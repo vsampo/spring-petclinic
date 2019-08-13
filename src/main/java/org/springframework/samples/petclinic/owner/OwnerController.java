@@ -15,14 +15,12 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -35,6 +33,7 @@ import java.util.Map;
  * @author Arjen Poutsma
  * @author Michael Isvy
  */
+//@RestController
 @Controller
 class OwnerController {
 
@@ -51,6 +50,9 @@ class OwnerController {
         dataBinder.setDisallowedFields("id");
     }
 
+    //@RequestMapping(value="/owners/new",
+    //        method=RequestMethod.GET,
+    //        produces= MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/owners/new")
     public String initCreationForm(Map<String, Object> model) {
         Owner owner = new Owner();

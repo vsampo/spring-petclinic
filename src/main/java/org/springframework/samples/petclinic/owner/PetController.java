@@ -23,7 +23,9 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Juergen Hoeller
@@ -84,6 +86,12 @@ class PetController {
             this.pets.save(pet);
             return "redirect:/owners/{ownerId}";
         }
+    }
+
+    @PostMapping(path="/pets", consumes = "application/json", produces = "application/json")
+    public @ResponseBody Pet addPet(@RequestBody Pet newPet) {
+        pets.save(newPet);
+        return newPet;
     }
 
     @GetMapping("/pets/{petId}/edit")
