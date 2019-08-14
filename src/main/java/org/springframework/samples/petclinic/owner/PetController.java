@@ -89,7 +89,8 @@ class PetController {
     }
 
     @PostMapping(path="/pets", consumes = "application/json", produces = "application/json")
-    public @ResponseBody Pet addPet(@RequestBody Pet newPet) {
+    public @ResponseBody Pet addPet(@RequestBody @Valid Pet newPet, @PathVariable("ownerId") int ownerId) {
+        newPet.setOwner(this.owners.findById(ownerId));
         pets.save(newPet);
         return newPet;
     }

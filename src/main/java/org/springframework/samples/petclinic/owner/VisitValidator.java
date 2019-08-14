@@ -7,7 +7,6 @@ import org.springframework.validation.Validator;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.chrono.ChronoLocalDateTime;
 
 public class VisitValidator  implements Validator {
 

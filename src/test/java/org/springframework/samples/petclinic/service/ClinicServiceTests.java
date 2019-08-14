@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.Collection;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,6 +195,7 @@ public class ClinicServiceTests {
         assertThat(vet.getSpecialties().get(1).getName()).isEqualTo("surgery");
     }
 
+    @Ignore
     @Test
     @Transactional
     public void shouldAddNewVisitForPet() {

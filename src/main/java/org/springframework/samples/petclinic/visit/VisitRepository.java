@@ -43,6 +43,8 @@ public interface VisitRepository extends Repository<Visit, Integer> {
 
     List<Visit> findByPetId(Integer petId);
 
+    List<Visit> findByVetId(Integer vetId);
+
     //void delete(Visit visit);
 
     void deleteById(int id);

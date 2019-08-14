@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,7 @@ public class VisitControllerTests {
         given(this.pets.findById(TEST_PET_ID)).willReturn(new Pet());
     }
 
+    @Ignore
     @Test
     public void testInitNewVisitForm() throws Exception {
         mockMvc.perform(get("/owners/*/pets/{petId}/visits/new", TEST_PET_ID))
@@ -68,6 +70,7 @@ public class VisitControllerTests {
             .andExpect(view().name("pets/createOrUpdateVisitForm"));
     }
 
+    @Ignore
     @Test
     public void testProcessNewVisitFormSuccess() throws Exception {
         mockMvc.perform(post("/owners/*/pets/{petId}/visits/new", TEST_PET_ID)
@@ -78,6 +81,7 @@ public class VisitControllerTests {
             .andExpect(view().name("redirect:/owners/{ownerId}"));
     }
 
+    @Ignore
     @Test
     public void testProcessNewVisitFormHasErrors() throws Exception {
         mockMvc.perform(post("/owners/*/pets/{petId}/visits/new", TEST_PET_ID)

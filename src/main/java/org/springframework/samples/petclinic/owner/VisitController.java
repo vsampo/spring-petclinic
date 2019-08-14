@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,11 +41,13 @@ class VisitController {
 
     private final VisitRepository visits;
     private final PetRepository pets;
+    private final VetRepository vets;
 
 
-    public VisitController(VisitRepository visits, PetRepository pets) {
+    public VisitController(VisitRepository visits, PetRepository pets, VetRepository vets) {
         this.visits = visits;
         this.pets = pets;
+        this.vets = vets;
     }
 
     @InitBinder
@@ -89,6 +94,30 @@ class VisitController {
             this.visits.save(visit);
             return "redirect:/owners/{ownerId}";
         }
+    }
+
+    @GetMapping("/visits/pet/{petId}")
+    public List<Visit> getVisitsByPet(@PathVariable("petId") int petId, Map<String, Object> model) {
+        return visits.findByPetId(petId);
+    }
+
+    @GetMapping("/visits/vet/{vetId}")
+    public List<Visit> getVisitsByVet(@PathVariable("vetId") int vetId, Map<String, Object> model) {
+        return visits.findByVetId(vetId);
+    }
+
+
+    @GetMapping("/pets")
+    public List<Pet> getPets() {
+        List<Pet> pets = new ArrayList<>();
+        pets.addAll(this.pets.findAll());
+        return pets;
+    }
+
+    @PostMapping(path="/pets", consumes = "application/json", produces = "application/json")
+    public @ResponseBody Pet addPet(@RequestBody @Valid Pet newPet) {
+        pets.save(newPet);
+        return newPet;
     }
 
     @PostMapping("/visit")

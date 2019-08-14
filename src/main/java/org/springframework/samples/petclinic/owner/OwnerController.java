@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,8 +35,8 @@ import java.util.Map;
  * @author Arjen Poutsma
  * @author Michael Isvy
  */
-//@RestController
-@Controller
+@RestController
+//@Controller
 class OwnerController {
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
@@ -76,7 +78,7 @@ class OwnerController {
         return "owners/findOwners";
     }
 
-    @GetMapping("/owners")
+//    @GetMapping("/owners")
     public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
 
         // allow parameterless GET request for /owners to return all records
@@ -132,4 +134,10 @@ class OwnerController {
         return mav;
     }
 
+    @GetMapping("/owners")
+    public List<Owner> getOwners() {
+        List<Owner> owners = new ArrayList<>();
+        owners.addAll(this.owners.findByLastName(""));
+        return owners;
+    }
 }

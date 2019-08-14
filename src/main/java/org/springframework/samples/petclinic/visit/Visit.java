@@ -37,7 +37,7 @@ import org.springframework.samples.petclinic.model.BaseEntity;
 public class Visit extends BaseEntity {
 
     @Column(name = "visit_date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:MM:SS")
+    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime date;
 
     @NotEmpty

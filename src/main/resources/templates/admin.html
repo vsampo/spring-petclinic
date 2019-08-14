@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html xmlns:th="https://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'home')}">
+
+
+  <body>
+
+  <script>
+
+      window.onload = function(){
+          $( function() {
+              $( "#datepicker" ).datepicker();
+          } );
+          $("#vets").click(function () {
+              $.getJSON("vets",function(data){
+                  constructVetList(data);
+              });
+          });
+
+          $("#owners").click(function () {
+              $.getJSON("owners",function(data){
+                  constructOwnerList(data);
+              });
+          });
+
+          $("#pets").click(function () {
+              $.getJSON("pets",function(data){
+                  constructPetList(data);
+              });
+          });
+
+          $("#addVet").click(function() {
+              makeVetForm();
+          });
+
+          $("#addPet").click(function() {
+              makePetForm();
+          });
+          $("#addVisit").click(function() {
+              makeVisitForm();
+          });
+      };
+
+      function constructVetList(data) {
+          clearElements("Vets");
+          var items = [];
+          $.each(data.vetList, function( key, val ) {
+              var fullname =  val.firstName + " " + val.lastName;
+              items.push( "<li id='" + key + "'>" + fullname + " <a onclick='getVetSchedule(\"" + fullname + "\"," + val.id + ")'>appointments</a>" + "</li>" );
+          });
+          $( "<ul/>", {
+              "class": "my-new-list",
+              html: items.join( "" )
+          }).appendTo('#content');
+      }
+
+      function constructOwnerList(data) {
+          clearElements("Owners");
+          var items = [];
+          $.each(data, function( key, val ) {
+              items.push( "<li id='" + key + "'>" + val.firstName + " " + val.lastName + "</li>" );
+          });
+          $( "<ul/>", {
+              "class": "my-new-list",
+              html: items.join( "" )
+          }).appendTo('#content');
+      }
+
+      function constructPetList(data) {
+          clearElements("pets");
+          var items = [];
+          $.each(data, function( key, val ) {
+              var fullname =  val.name;
+              items.push( "<li id='" + key + "'>" + fullname + " <a onclick='getPetSchedule(\"" + fullname + "\"," + val.id + ")'>appointments</a>" + "</li>" );          });
+          $( "<ul/>", {
+              "class": "my-new-list",
+              html: items.join( "" )
+          }).appendTo('#content');
+      }
+
+      function clearElements(data) {
+          $('#content').empty();
+          $('#content').append(data);
+          $('#schedule').empty();
+      }
+
+      function getVetSchedule(fullName, id) {
+          $('#schedule').empty();
+          $('#schedule').append("Schedule for " +fullName);
+
+          $.getJSON("visits/vet/"+id, function(data) {
+              populateSchedule(data);
+          });
+      }
+
+      function getPetSchedule(fullName, id) {
+          $('#schedule').empty();
+          $('#schedule').append("Schedule for " +fullName);
+
+          $.getJSON("visits/pet/"+id, function(data) {
+              populateSchedule(data);
+          });
+      }
+
+      function populateSchedule(data) {
+          var items = [];
+          $.each(data, function( key, val ) {
+              items.push( "<li id='" + key + "'>" + val.date + " PetId:" +val.petId + " procedure: " + val.description + " <a onclick='cancelAppointment(" + val.id + ")'>cancel</a></li>" );
+          });
+          $( "<ul/>", {
+              "class": "my-new-list",
+              html: items.length === 0? "No Appointments":items.join( "" )
+          }).appendTo('#schedule');
+      }
+
+      function cancelAppointment(id) {
+          $.ajax({
+              url: 'visit/'+id,
+              type: 'DELETE',
+              success: function(result) {
+                  $('#schedule').empty();
+              }
+          });
+      }
+
+      function makeVetForm() {
+          clearElements("Add a Vet");
+          $('#content').append("<br>First Name: <input type=text id='firstName'/><br>Last Name: <input type=text id='lastName'/><br><button type='button' onClick='addVet()'>Add</button>");
+      }
+
+      function addVet() {
+          var firstName = $("#firstName").val();
+          var lastName = $("#lastName").val();
+          console.log("firstname:" + firstName);
+
+          var data = new Object();
+          data.firstName =  firstName ;
+          data.lastName = lastName;
+          $.ajax('vets', {
+              data: JSON.stringify(data),
+              contentType: 'application/json',
+              type: 'POST',
+              success: function (response) {
+                  $("#vets").click();
+              }
+        })
+      }
+
+      function makePetForm() {
+          clearElements("Add a Pet");
+          $('#content').append("<br>Name: <input type=text id='name'/><br>Birth Date: <input type=\"text\" id=\"datepicker\"><br>type id:<input type='text' id='type'/> <br>Owner ID: <input type='text' id='owner'/><button type='button' onClick='addPet()'>Add</button>");
+      }
+
+      function addPet() {
+          var name = $("#name").val();
+          var birthdate = $("#datepicker").val();
+          var ownerid = $("#owner").val();
+          var type = $("#type").val();
+
+          console.log("date:" + birthdate);
+
+          var data = new Object();
+          data.name =  name ;
+          data.birthDate = birthdate;
+          data.type = new Object();
+          data.type.id = type;
+          $.ajax('owners/'+ ownerid + '/pets',{
+              data: JSON.stringify(data),
+              contentType: 'application/json',
+              type: 'POST',
+              success: function (response) {
+                  $("#pets").click();
+              }
+          })
+      }
+
+      function makeVisitForm() {
+          clearElements("Schedule an appointment");
+          $('#content').append("<br>Date and time: <input type=\"text\" id=\"date\"/><br>Description:<input type='text' id='desc'/> <br>Pet ID: <input type='text' id='pet'/><br>Vet ID: <input type='text' id='vet'/><button type='button' onClick='addVisit()'>Add</button>");
+      }
+
+      function addVisit() {
+          var desc = $("#desc").val();
+          var date = $("#date").val();
+          var vet = $("#vet").val();
+          var pet = $("#pet").val();
+
+          console.log("date:" + date);
+
+          var data = new Object();
+          data.description =  desc ;
+          data.date = date;
+          data.petId = pet;
+          data.vetId = vet;
+          $.ajax('visit',{
+              data: JSON.stringify(data),
+              contentType: 'application/json',
+              type: 'POST',
+              success: function (response) {
+                  $("#vets").click();
+              }
+          })
+      }
+  </script>
+
+    <h2 th:text="#{welcome}">Administraton</h2>
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+
+        <div id="button-bar">
+            <button type="button" id="owners" >Owners</button>
+            <button type="button" id="vets">Vets</button>
+            <button type="button" id="pets">Pets</button>
+            <button type="button" id="addPet" >Add Pet</button>
+            <button type="button" id="addVet" >Add Vet</button>
+            <button type="button" id="addVisit" >Schedule Appointment</button>
+
+        </div>
+        <div id="content"></div>
+        <div id="schedule"></div>
+    </div>
+
+  </body>
+
+</html>
